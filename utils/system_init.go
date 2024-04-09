@@ -12,8 +12,10 @@ import (
 	"time"
 )
 
-var DB *gorm.DB
-var Red *redis.Client
+var (
+	DB  *gorm.DB
+	Red *redis.Client
+)
 
 func InitConfig() {
 	viper.SetConfigName("app")
@@ -47,12 +49,15 @@ func InitMySQL() error {
 }
 
 func InitRedis() {
-	Red := redis.NewClient(&redis.Options{
-		Addr:         viper.GetString("redis.add"),
-		Password:     viper.GetString("redis.password"),
-		DB:           viper.GetInt("redis.DB"),
-		PoolSize:     viper.GetInt("redis.poolSize"),
-		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	Red = redis.NewClient(&redis.Options{
+		//Addr:         viper.GetString("redis.addr"),
+		//Password:     viper.GetString("redis.password"),
+		//DB:           viper.GetInt("redis.DB"),
+		//PoolSize:     viper.GetInt("redis.poolSize"),
+		//MinIdleConns: viper.GetInt("redis.minIdleConn"),
+		Addr:     "192.168.102.20:6379",
+		Password: "123456",
+		DB:       0,
 	})
 	pong, err := Red.Ping().Result()
 	if err != nil {
@@ -61,4 +66,34 @@ func InitRedis() {
 		fmt.Println("redis init success:", pong)
 	}
 
+}
+
+// 固定变量
+const (
+	PublishKey = "websocket"
+)
+
+// Publish 发布消息到Redis
+func Publish(channel string, msg string) error {
+	fmt.Println("Publishing...", msg)
+	_, err := Red.Publish(channel, msg).Result()
+	if err != nil {
+		fmt.Println("Publish error:", err)
+	}
+	return err
+}
+
+// Subscribe 订阅Redis消息
+func Subscribe(channel string) string {
+	if Red == nil {
+		log.Println("Redis client is nil")
+	} else {
+		log.Println("Subscribing to channel:", channel)
+	}
+	fmt.Println("Subscribing to...", channel)
+	sub := Red.Subscribe(channel)
+
+	msg, _ := sub.ReceiveMessage()
+	defer sub.Close()
+	return msg.Payload
 }

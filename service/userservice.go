@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
 	"strconv"
+	"time"
 )
 
 const salt = "heian"
@@ -152,4 +156,35 @@ func UpdateUser(c *gin.Context) {
 		})
 	}
 
+}
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true // 需要根据实际情况调整跨域策略
+	},
+}
+
+func SendMsg(c *gin.Context) {
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		fmt.Println("WebSocket upgrade error:", err)
+		return
+	}
+	defer ws.Close()
+	fmt.Println("WebSocket connection established", ws)
+	MsgHandler(c, ws)
+}
+
+func MsgHandler(c *gin.Context, ws *websocket.Conn) {
+
+	for {
+		sub := utils.Subscribe(utils.PublishKey)
+		fmt.Println("Message received:", sub)
+		tm := time.Now().Format("2006-01-02 15:04:05")
+		m := fmt.Sprintf("[ws][%s]:%s", tm, sub)
+		err := ws.WriteMessage(1, []byte(m))
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 }
