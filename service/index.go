@@ -17,7 +17,7 @@ func GetIndex(c *gin.Context) {
 
 // GetUserList
 // @Tags 用户列表信息
-// @Success 200 {string} json{"code","message"}
+// @Success 200 {string} json {"code","message"}
 // @Router /user/getUserList [get]
 func GetUserList(c *gin.Context) {
 	date := make([]*models.UserBasic, 10)

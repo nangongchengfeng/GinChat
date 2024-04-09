@@ -2,7 +2,6 @@ package models
 
 import (
 	"GinChat/utils"
-	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -47,10 +46,10 @@ func GetUserList() []*UserBasic {
 	// 从数据库中查找data中的数据
 	utils.DB.Find(&data)
 	// 遍历data中的数据
-	for _, v := range data {
-		// 打印v
-		fmt.Println(v)
-	}
+	//for _, v := range data {
+	//	// 打印v
+	//	fmt.Println(v)
+	//}
 	// 返回data
 	return data
 }
