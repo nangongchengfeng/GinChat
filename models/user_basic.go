@@ -2,6 +2,7 @@ package models
 
 import (
 	"GinChat/utils"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -14,9 +15,9 @@ type UserBasic struct {
 	// 密码
 	PassWord string
 	// 手机号
-	Phone string
+	Phone string `valid:"matches(^1[3-9]{1}\\d{9}$)"`
 	// 邮箱
-	Email string
+	Email string `valid:"email"`
 	// 身份
 	Identity string
 	// 客户端IP
@@ -52,4 +53,45 @@ func GetUserList() []*UserBasic {
 	//}
 	// 返回data
 	return data
+}
+
+func CreateUser(user UserBasic) {
+	utils.DB.Create(&user)
+	// 打印user
+}
+
+func DeleteUser(user UserBasic) {
+	utils.DB.Delete(&user)
+}
+
+func UpdateUser(user UserBasic) {
+	utils.DB.Save(&user)
+}
+
+func FindUserByName(name string) UserBasic {
+	user := UserBasic{}
+	utils.DB.Where("name=?", name).First(&user)
+	return user
+}
+
+func FindUserByPhone(phone string) *gorm.DB {
+	user := UserBasic{}
+	return utils.DB.Where("phone=?", phone).First(&user)
+}
+
+func FindUserByEmail(email string) *gorm.DB {
+	user := UserBasic{}
+	return utils.DB.Where("email = ?", email).First(&user)
+}
+
+func FindUserByNameAndPwd(name string, password string) UserBasic {
+	user := UserBasic{}
+	utils.DB.Where("name = ? and pass_word=?", name,
+		password).First(&user)
+	//token加密
+	str := fmt.Sprintf("%d", time.Now().Unix())
+	temp := utils.MD5Encode(str)
+	utils.DB.Model(&user).Where("id = ?", user.ID).Update("identity",
+		temp)
+	return user
 }
