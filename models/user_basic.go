@@ -70,6 +70,7 @@ func UpdateUser(user UserBasic) {
 
 func FindUserByName(name string) UserBasic {
 	user := UserBasic{}
+	fmt.Println("name:", name)
 	utils.DB.Where("name=?", name).First(&user)
 	return user
 }

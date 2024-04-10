@@ -12,6 +12,8 @@ func Router() *gin.Engine {
 	r := gin.Default()
 	// 设置网页存放目录
 	r.LoadHTMLGlob("views/**/*")
+	// 设置静态文件存放目录
+	r.Static("/asset", "./asset")
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

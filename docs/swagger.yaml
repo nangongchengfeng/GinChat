@@ -1,3 +1,11 @@
+definitions:
+  service.LoginInfo:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -50,15 +58,17 @@ paths:
       - 用户模块
   /user/findUserByNameAndPwd:
     post:
+      consumes:
+      - application/json
       parameters:
-      - description: 用户名
-        in: query
-        name: name
-        type: string
-      - description: 密码
-        in: query
-        name: password
-        type: string
+      - description: 登录信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoginInfo'
+      produces:
+      - application/json
       responses:
         "200":
           description: code","message"}

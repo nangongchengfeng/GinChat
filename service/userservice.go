@@ -30,18 +30,31 @@ func GetUserList(c *gin.Context) {
 		})
 }
 
+type LoginInfo struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
 // FindUserByNameAndPwd
 // @Summary 所有用户
 // @Tags 用户模块
-// @param name query string false "用户名"
-// @param password query string false "密码"
-// @Success 200 {string} json{"code","message"}
+// @Accept  json
+// @Produce  json
+// @param body body LoginInfo true "登录信息"
+// @Success 200 {string} json {"code","message"}
 // @Router /user/findUserByNameAndPwd [post]
 func FindUserByNameAndPwd(c *gin.Context) {
 
-	//data := models.UserBasic{}
-	name := c.Query("name")
-	password := c.Query("password")
+	var loginInfo LoginInfo
+	if err := c.BindJSON(&loginInfo); err != nil {
+		fmt.Println("Error:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	name := loginInfo.Name
+	password := loginInfo.Password
+	fmt.Printf("Login info: %+v\n", loginInfo)
+	fmt.Println("name:", name, "password:", password)
 	user := models.FindUserByName(name)
 	if user.Name == "" {
 		c.JSON(200, gin.H{
