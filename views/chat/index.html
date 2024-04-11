@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
+{{define "/chat/index.html"}}
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <!--js include-->
+    {{template "/chat/head.html"}}
 </head>
 <body>
+<!--底部菜单-->
+{{template "/chat/tabmenu.html"}}
+<header class="mui-bar mui-bar-nav">
+</header>
+<h1>聊天</h1>
+<div class="mui-content" id="pageapp">
+    <!--联系人-->
+    {{template "/chat/concat.html"}}
+    <!--群聊-->
+    {{template "/chat/group.html"}}
+    <!--个人中心-->
+    {{template "/chat/profile.html"}}
+    <!--聊天主界面-->
+    {{template "/chat/main.html"}}
 
+</div>
 </body>
 </html>
+{{template "/chat/foot.shtml"}}
+{{end}}
